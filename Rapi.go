@@ -60,10 +60,18 @@ json.NewEncoder(w).Encode(newEvent)
 
 }
 func getOneEvent(w http.ResponseWriter, r *http.Request) {
-
+// uses the Gorilla Mux router to extract the value associated with the key "id" from the request variables (r)
+	eventID :=mux.Vars(r)["id"]
+	// range to iterate over events 
+	//_to ignore the loop index
+	for _,singleevent:=range events{
+		if singleevent.ID == eventID{
+			json.NewEncoder(w).Encode(singleevent)
+		}
+	}
 }
 func getAllEvents(w http.ResponseWriter, r *http.Request) {
-	// send json form client to server or from server to client 
+	// send json from server to client 
 json.NewEncoder(w).Encode(events)
 }
 func updateEvent(w http.ResponseWriter, r *http.Request) {
