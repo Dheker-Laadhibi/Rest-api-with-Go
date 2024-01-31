@@ -41,43 +41,66 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 	// req body contains title id description so we have to read it from
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w,"kindly enter data with event title and description only in order")
+		fmt.Fprintf(w, "kindly enter data with event title and description only in order")
 	}
-// decode bc reqbody has type of bytes 
-json.Unmarshal(reqBody ,&newEvent)
-events = append(events , newEvent)
-// status code request and response are  succeed  201 = added 
-w.WriteHeader(http.StatusCreated)
-//request body
-fmt.Println(reqBody)
-// response body
-fmt.Println(r.Body)
-//send data to w (response ) 
-json.NewEncoder(w).Encode(newEvent)
-
-
-
+	// decode bc reqbody has type of bytes
+	json.Unmarshal(reqBody, &newEvent)
+	events = append(events, newEvent)
+	// status code request and response are  succeed  201 = added
+	w.WriteHeader(http.StatusCreated)
+	//request body
+	fmt.Println(reqBody)
+	// response body
+	fmt.Println(r.Body)
+	//send data to w (response )
+	json.NewEncoder(w).Encode(newEvent)
 
 }
 func getOneEvent(w http.ResponseWriter, r *http.Request) {
-// uses the Gorilla Mux router to extract the value associated with the key "id" from the request variables (r)
-	eventID :=mux.Vars(r)["id"]
-	// range to iterate over events 
+	// uses the Gorilla Mux router to extract the value associated with the key "id" from the request variables (r)
+	eventID := mux.Vars(r)["id"]
+	// range to iterate over events
 	//_to ignore the loop index
-	for _,singleevent:=range events{
-		if singleevent.ID == eventID{
+	for _, singleevent := range events {
+		if singleevent.ID == eventID {
 			json.NewEncoder(w).Encode(singleevent)
 		}
 	}
 }
 func getAllEvents(w http.ResponseWriter, r *http.Request) {
-	// send json from server to client 
-json.NewEncoder(w).Encode(events)
+	// send json from server to client
+	json.NewEncoder(w).Encode(events)
 }
 func updateEvent(w http.ResponseWriter, r *http.Request) {
+	eventID := mux.Vars(r)["id"]
+	var updatEv event
+	reqBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "kindly enter data with event title and description only in order")
+	}
+	json.Unmarshal(reqBody, &updatEv)
+	for i, singleEvent := range events {
 
+		if singleEvent.ID == eventID {
+			singleEvent.ID = updatEv.ID
+			singleEvent.Title = updatEv.Title
+			singleEvent.Description = updatEv.Description
+			//// Append 'singleEvent' to 'events' starting from index 'i'.
+
+			events[i] = singleEvent
+			json.NewEncoder(w).Encode(singleEvent)
+		}
+	}
 }
 func deleteEvent(w http.ResponseWriter, r *http.Request) {
+	eventID := mux.Vars(r)["id"]
+	for i, singleEvent := range events {
+
+		if singleEvent.ID == eventID {
+			events = append(events[:i],events[i+1:]...)
+			fmt.Fprintf(w,"deleted " , eventID)
+		}
+	}
 
 }
 
