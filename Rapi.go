@@ -63,7 +63,8 @@ func getOneEvent(w http.ResponseWriter, r *http.Request) {
 
 }
 func getAllEvents(w http.ResponseWriter, r *http.Request) {
-
+	// send json form client to server or from server to client 
+json.NewEncoder(w).Encode(events)
 }
 func updateEvent(w http.ResponseWriter, r *http.Request) {
 
